@@ -2,6 +2,10 @@
 const express = require('express')
 const fs = require('fs')
 const mysql = require('mysql2')
+const inquirer = require('inquirer')
+
+// router files
+const api = require('./routes/router.js')
 
 // port for heroku or localhost and initiating express()
 const PORT = process.env.PORT || 3001;
@@ -16,6 +20,13 @@ const db = mysql.createConnection(
         database: 'INSERT DATABASE HERE'
     }
 )
+
+app.use('/api', api)
+
+inquirer
+.prompt([
+
+])
 
 
 
