@@ -8,7 +8,14 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 // creating connection to the db
-const db = 
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'password',
+        database: 'INSERT DATABASE HERE'
+    }
+)
 
 
 
