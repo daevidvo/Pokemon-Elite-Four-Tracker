@@ -89,15 +89,11 @@ function viewRegionEliteFourPokemon(){
 
 
 function viewEliteFourTotalAge(){
-    db.query(`SELECT age FROM trainer`,(err,results)=>{
+    db.query(`SELECT SUM(age) as total_years_of_experience FROM trainer`,(err,results)=>{
         if(err){
             console.error(err)
         }else{
-            let sumAge = 0;
-            for(let x=0;x<results.length;x=x+1){
-                sumAge = Number(results[x].age) + sumAge
-            }
-            console.log(`The total years of experience of the Elite Four is: ${sumAge}`)
+            console.table(results[0])
         }
     })
 }
