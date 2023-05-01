@@ -1,8 +1,8 @@
-INSERT INTO region(region_name)
+INSERT INTO region(name)
 VALUES 
 ('Kanto'), ('Hoenn'), ('Sinnoh');
 
-INSERT INTO trainer(trainer_name, age, region_id)
+INSERT INTO trainer(name, age, region_id)
 VALUES 
 ('Lorelei', 25, 1), ('Bruno', 35, 1), ('Agatha', 75, 1), ('Lance', 29, 1),
 ('Sidney', 21, 2), ('Phoebe', 20, 2), ('Glacia', 40, 2), ('Drake', 55, 2),
