@@ -1,5 +1,4 @@
 // node modules
-const fs = require('fs')
 const mysql = require('mysql2')
 const inquirer = require('inquirer')
 
@@ -17,179 +16,73 @@ const db = mysql.createConnection(
 
 function viewRegions(){
     db.query(`SELECT * FROM region`,(err,results)=>{
-        (err)?console.log(err):
-        console.log(results)
+        (err)?console.error(err):
+        console.table(results)
     })
 }
 function viewTrainers(){
     db.query(`SELECT * FROM trainer`,(err,results)=>{
-        (err)?console.log(err):
-        console.log(results)
+        (err)?console.error(err):
+        console.table(results)
     })
 }
 function viewPokemon(){
     db.query(`SELECT * FROM pokemon`,(err,results)=>{
-        (err)?console.log(err):
-        console.log(results)
+        (err)?console.error(err):
+        console.table(results)
     })
 }
 
 function viewEliteFourPokemon(){
-    inquirer
-    .prompt([
-        {
-            type: 'list',
-            name: 'userChoiceViewEliteFourPokemon',
-            message: 'Choose a Trainer',
-            choices: [
-                'Lorelei',
-                'Bruno',
-                'Agatha',
-                'Lance',
-                'Sidney',
-                'Phoebe',
-                'Glacia',
-                'Drake',
-                'Aaron',
-                'Bertha',
-                'Flint',
-                'Lucian'
-            ]
+   let eliteFourArr = []
+   db.query(`SELECT name FROM trainer`,(err,results)=>{
+    if(err){
+        console.error(err)
+    }else{
+        for(let x=0;x<results.length;x=x+1){
+            eliteFourArr.push(results[x].name)
         }
-    ])
-    .then((data)=>{
-        switch(data.userChoiceViewEliteFourPokemon){
-            case 'Lorelei':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 1`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Bruno':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 2`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Agatha':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 3`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Lance':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 4`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Sidney':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 5`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Phoebe':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 6`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Glacia':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 7`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Drake':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 8`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Aaron':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 9`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Bertha':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 10`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Flint':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 11`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-            case 'Lucian':
-                db.query(`SELECT * FROM pokemon WHERE trainer_id = 2`,(err,results)=>{
-                    if(err){
-                        console.log(err)
-                    }
-                    console.table(results)
-                })
-                break;
-        }
-    })
+        inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'trainer',
+                message: 'Which trainer\'s pokemon would you like to view?',
+                choices: eliteFourArr
+            }
+        ])
+        .then((data)=>{
+            db.query(`SELECT pokemon.id as id,pokemon.name as pokmon_name,pokemon.category as category,pokemon.strongest_in_party FROM pokemon INNER JOIN trainer ON trainer.id = pokemon.trainer_id WHERE trainer.name = ?`,data.trainer,(err,results)=>{
+                (err)?console.error(err):console.table(results)
+            })
+        })
+    }
+   })
 }
 
 function viewRegionEliteFourPokemon(){
-    inquirer
-    .prompt([
-        {
-            type: 'list',
-            name: 'userChoiceViewRegionEliteFourPokemon',
-            message: 'Choose a Region',
-            choices: [
-                'Kanto',
-                'Hoenn',
-                'Sinnoh'
-            ]
-        }
-    ])
-    .then((data)=>{
-        switch(data.userChoiceViewRegionEliteFourPokemon){
-            case 'Kanto':
-                db.query(`SELECT region.name as region_name, pokemon.name as pokemon_name FROM region INNER JOIN trainer ON trainer.region_id = region.id INNER JOIN pokemon ON pokemon.trainer_id = trainer.id WHERE region.id = 1`,(err,results)=>{
-                    (err)?console.error(err):console.table(results);
+    let regionArr = []
+    db.query(`SELECT name FROM region`,(err,results)=>{
+        if(err){
+            console.error(err)
+        }else{
+            for(let x=0;x<results.length;x=x+1){
+                regionArr.push(results[x].name)
+            }
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'region',
+                    message: 'Which region\'s Elite Four pokemon would you like to view?',
+                    choices: regionArr
+                }
+            ])
+            .then((data)=>{
+                db.query(`SELECT pokemon.name as pokemon_name FROM region INNER JOIN trainer ON trainer.region_id = region.id INNER JOIN pokemon ON pokemon.trainer_id = trainer.id WHERE region.name = ?`,data.region,(err,results)=>{
+                    (err)?console.error(err):console.table(results)
                 })
-                break;
-            case 'Hoenn':
-                db.query(`SELECT region.name as region_name, pokemon.name as pokemon_name FROM region INNER JOIN trainer ON trainer.region_id = region.id INNER JOIN pokemon ON pokemon.trainer_id = trainer.id WHERE region.id = 2`,(err,results)=>{
-                    (err)?console.error(err):console.table(results);
-                })
-                break;
-            case 'Sinnoh':
-                db.query(`SELECT region.name as region_name, pokemon.name as pokemon_name FROM region INNER JOIN trainer ON trainer.region_id = region.id INNER JOIN pokemon ON pokemon.trainer_id = trainer.id WHERE region.id = 3`,(err,results)=>{
-                    (err)?console.error(err):console.table(results);
-                })
-                break;
+            })
         }
     })
 }
@@ -219,7 +112,8 @@ function addRegion(){
         }
     ])
     .then((data)=>{
-        db.query(`INSERT INTO region(name) VALUE (?)`, data.newRegionName,(err,results)=>{
+        let newRegion = data.newRegionName.charAt(0).toUpperCase()+data.newRegionName.slice(1)
+        db.query(`INSERT INTO region(name) VALUE (?)`, newRegion,(err,results)=>{
             if(err){
                 console.error(err)
             }else{
@@ -258,13 +152,13 @@ function addTrainer(){
         },
     ])
     .then((data)=>{
-        let newTrainerName = data.newTrainerName
+        let newTrainerName = data.newTrainerName.charAt(0).toUpperCase()+data.newTrainerName.slice(1)
         let newTrainerAge = data.newTrainerAge
         let newTrainerRegion = data.newTrainerRegion
         let flag = false
         db.query(`SELECT name, id FROM region`,(err,results)=>{
             if(err){
-                console.log(err)
+                console.error(err)
             }else{
                 let regionArr = []
                 let newTrainerRegionLowerCase = newTrainerRegion.toLowerCase();
@@ -436,12 +330,12 @@ function updatePokemonTrainer(){
                                 .then((data)=>{
                                     let selectedNewTrainer = data.updatedPokemonTrainer
 
-                                    db.query(`SELECT name,trainer_id FROM pokemon WHERE id = ?`,selectedPokemonId,(err,results)=>{
+                                    db.query(`SELECT pokemon.name as pokemon_name,trainer.name as trainer_name FROM pokemon INNER JOIN trainer ON pokemon.trainer_id = trainer.id WHERE pokemon.id = ?`,selectedPokemonId,(err,results)=>{
                                         if(err){
                                             console.error(err)
                                         }else{
                                             console.log('OLD POKEMON DATA')
-                                            console.table(results[0])
+                                            console.table(results)
                                         }
                                     })
                                     db.query(`SELECT id FROM trainer WHERE name = ?`,selectedNewTrainer,(err,results)=>{
@@ -452,12 +346,12 @@ function updatePokemonTrainer(){
                                                 if(err){
                                                     console.error(err)
                                                 }else{
-                                                    db.query(`SELECT name,trainer_id FROM pokemon WHERE id = ?`,selectedPokemonId,(err,results)=>{
+                                                    db.query(`SELECT pokemon.name as pokemon_name,trainer.name as trainer_name FROM pokemon INNER JOIN trainer ON pokemon.trainer_id = trainer.id WHERE pokemon.id = ?`,selectedPokemonId,(err,results)=>{
                                                         if(err){
                                                             console.error(err)
                                                         }else{
                                                             console.log('NEW POKEMON DATA')
-                                                            console.table(results[0])
+                                                            console.table(results)
                                                         }
                                                     })
                                                 }
@@ -491,9 +385,6 @@ function startInq(){
                 'Add a Trainer',
                 'Add a Pokemon',
                 'Update a Pokemon\'s Trainer',
-                'Delete a Region',
-                'Delete a Trainer',
-                'Delete a Pokemon'
             ]
         },
     ])
@@ -528,15 +419,6 @@ function startInq(){
                 break;
             case 'Update a Pokemon\'s Trainer':
                 updatePokemonTrainer();
-                break;
-            case 'Delete a Region':
-
-                break;
-            case 'Delete a Trainer':
-
-                break;
-            case 'Delete a Pokemon':
-
                 break;
         }
     })
