@@ -5,12 +5,12 @@ USE elitefour_db;
 
 CREATE TABLE region(
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    region_name VARCHAR(30) NOT NULL
+    name VARCHAR(30) NOT NULL
 );
 
 CREATE TABLE trainer( 
     id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    trainer_name VARCHAR(30) NOT NULL,
+    name VARCHAR(30) NOT NULL,
     age DEC(5, 2) NOT NULL,
     region_id INT NOT NULL, FOREIGN KEY (region_id) REFERENCES region(id)
 );
