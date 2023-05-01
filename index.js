@@ -385,6 +385,94 @@ function addPokemon(){
     })
 }
 
+function updatePokemonTrainer(){
+    db.query(`SELECT name FROM trainer`,(err,results)=>{
+        let trainerArr = []
+        if(err){
+            console.error(err)
+        }else{
+            for(let x=0;x<results.length;x=x+1){
+                trainerArr.push(results[x].name)
+            }
+            inquirer
+                .prompt([
+                    {
+                        type: 'list',
+                        name: 'pokemonTrainer',
+                        message: 'Which trainer owns this pokemon?',
+                        choices: trainerArr
+                    }
+                ])
+                .then((data)=>{
+                    db.query(`SELECT pokemon.name, pokemon.id FROM pokemon INNER JOIN trainer ON trainer.id = pokemon.trainer_id WHERE trainer.name = ?`, data.pokemonTrainer, (err,results)=>{
+                        if(err){
+                            console.error(err)
+                        }else{
+                            console.table(results)
+                            let selectedPokemonArr = []
+                            for(let x=0;x<results.length;x=x+1){
+                                selectedPokemonArr.push(results[x].id)
+                            }
+                            inquirer
+                            .prompt([
+                                {
+                                    type: 'list',
+                                    name: 'selectedPokemonId',
+                                    message: 'Which pokemon would you like to update? (refer to the table above to select the correct ID)',
+                                    choices: selectedPokemonArr
+                                }
+                            ])
+                            .then((data)=>{
+                                let selectedPokemonId = data.selectedPokemonId
+                                inquirer
+                                .prompt([
+                                    {
+                                        type: 'list',
+                                        name: 'updatedPokemonTrainer',
+                                        message: 'Who is the new trainer for this pokmeon?',
+                                        choices: trainerArr
+                                    }
+                                ])
+                                .then((data)=>{
+                                    let selectedNewTrainer = data.updatedPokemonTrainer
+
+                                    db.query(`SELECT name,trainer_id FROM pokemon WHERE id = ?`,selectedPokemonId,(err,results)=>{
+                                        if(err){
+                                            console.error(err)
+                                        }else{
+                                            console.log('OLD POKEMON DATA')
+                                            console.table(results[0])
+                                        }
+                                    })
+                                    db.query(`SELECT id FROM trainer WHERE name = ?`,selectedNewTrainer,(err,results)=>{
+                                        if(err){
+                                            console.error(err)
+                                        }else{
+                                            db.query(`UPDATE pokemon set trainer_id = ? WHERE id = ?`, [results[0].id, selectedPokemonId],(err,results)=>{
+                                                if(err){
+                                                    console.error(err)
+                                                }else{
+                                                    db.query(`SELECT name,trainer_id FROM pokemon WHERE id = ?`,selectedPokemonId,(err,results)=>{
+                                                        if(err){
+                                                            console.error(err)
+                                                        }else{
+                                                            console.log('NEW POKEMON DATA')
+                                                            console.table(results[0])
+                                                        }
+                                                    })
+                                                }
+                                            })
+                                        }
+                                    })
+                                })
+                            })
+                        }
+                    })
+                })
+        }
+    })
+}
+
 function startInq(){
     inquirer
     .prompt([
@@ -403,7 +491,6 @@ function startInq(){
                 'Add a Trainer',
                 'Add a Pokemon',
                 'Update a Pokemon\'s Trainer',
-                'Update the Strongest Pokemon in a Party',
                 'Delete a Region',
                 'Delete a Trainer',
                 'Delete a Pokemon'
@@ -440,10 +527,7 @@ function startInq(){
                 addPokemon();
                 break;
             case 'Update a Pokemon\'s Trainer':
-
-                break;
-            case 'Update the Strongest Pokemon in a Party':
-
+                updatePokemonTrainer();
                 break;
             case 'Delete a Region':
 
