@@ -59,7 +59,7 @@ To install this application, follow the steps outlined below:
 5. Choose which option you'd like and follow the prompts
 6. If an error occurs, please make sure to read the message and update your answers accordingly
 
-You can also [watch this demo video to see how every function works](https://youtu.be/zcwkxTZhhuM)
+You can also [watch this demo video to see how every function works](https://youtu.be/YFUhG4-oqb0)
 
 If there are any questions on how to use the app, feel free to checkout my [socials](#author-info-👺) down below and message me there.
 
