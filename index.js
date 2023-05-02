@@ -1,6 +1,6 @@
 // node modules
-const mysql = require('mysql2')
-const inquirer = require('inquirer')
+const mysql = require('mysql2');
+const inquirer = require('inquirer');
 
 // creating connection to the db
 const db = mysql.createConnection(
@@ -10,7 +10,7 @@ const db = mysql.createConnection(
         password: 'password',
         database: 'elitefour_db'
     }
-)
+);
 
 // inquirer
 
@@ -19,28 +19,28 @@ function viewRegions(){
         (err)?console.error(err):
         console.table(results)
     })
-}
+};
 function viewTrainers(){
     db.query(`SELECT * FROM trainer`,(err,results)=>{
         (err)?console.error(err):
         console.table(results)
     })
-}
+};
 function viewPokemon(){
     db.query(`SELECT * FROM pokemon`,(err,results)=>{
         (err)?console.error(err):
         console.table(results)
     })
-}
+};
 
 function viewEliteFourPokemon(){
    let eliteFourArr = []
    db.query(`SELECT name FROM trainer`,(err,results)=>{
     if(err){
-        console.error(err)
+        console.error(err);
     }else{
         for(let x=0;x<results.length;x=x+1){
-            eliteFourArr.push(results[x].name)
+            eliteFourArr.push(results[x].name);
         }
         inquirer
         .prompt([
@@ -48,26 +48,27 @@ function viewEliteFourPokemon(){
                 type: 'list',
                 name: 'trainer',
                 message: 'Which trainer\'s pokemon would you like to view?',
-                choices: eliteFourArr
+                choices: eliteFourArr,
+                loop: false
             }
         ])
         .then((data)=>{
             db.query(`SELECT pokemon.id as id,pokemon.name as pokmon_name,pokemon.category as category,pokemon.strongest_in_party FROM pokemon INNER JOIN trainer ON trainer.id = pokemon.trainer_id WHERE trainer.name = ?`,data.trainer,(err,results)=>{
                 (err)?console.error(err):console.table(results)
-            })
-        })
-    }
-   })
-}
+            });
+        });
+    };
+   });
+};
 
 function viewRegionEliteFourPokemon(){
     let regionArr = []
     db.query(`SELECT name FROM region`,(err,results)=>{
         if(err){
-            console.error(err)
+            console.error(err);
         }else{
             for(let x=0;x<results.length;x=x+1){
-                regionArr.push(results[x].name)
+                regionArr.push(results[x].name);
             }
             inquirer
             .prompt([
@@ -75,28 +76,28 @@ function viewRegionEliteFourPokemon(){
                     type: 'list',
                     name: 'region',
                     message: 'Which region\'s Elite Four pokemon would you like to view?',
-                    choices: regionArr
+                    choices: regionArr,
+                    loop: false
                 }
             ])
             .then((data)=>{
                 db.query(`SELECT pokemon.name as pokemon_name FROM region INNER JOIN trainer ON trainer.region_id = region.id INNER JOIN pokemon ON pokemon.trainer_id = trainer.id WHERE region.name = ?`,data.region,(err,results)=>{
                     (err)?console.error(err):console.table(results)
-                })
-            })
-        }
-    })
-}
-
+                });
+            });
+        };
+    });
+};
 
 function viewEliteFourTotalAge(){
     db.query(`SELECT SUM(age) as total_years_of_experience FROM trainer`,(err,results)=>{
         if(err){
-            console.error(err)
+            console.error(err);
         }else{
-            console.table(results[0])
-        }
-    })
-}
+            console.table(results[0]);
+        };
+    });
+};
 
 function addRegion(){
     inquirer
@@ -111,16 +112,16 @@ function addRegion(){
         let newRegion = data.newRegionName.charAt(0).toUpperCase()+data.newRegionName.slice(1)
         db.query(`INSERT INTO region(name) VALUE (?)`, newRegion,(err,results)=>{
             if(err){
-                console.error(err)
+                console.error(err);
             }else{
                 db.query(`SELECT * FROM region`,(err,results)=>{
-                    (err)?console.error(err):console.table(results)
+                    (err)?console.error(err):console.table(results);
                 })
-                console.log('New region successfully added')
-            }
-        })
-    })
-}
+                console.log('New region successfully added');
+            };
+        });
+    });
+};
 
 function addTrainer(){
     inquirer
@@ -136,9 +137,9 @@ function addTrainer(){
             message: 'What is the age of the new trainer? (Numbers only)',
             validate: (input)=>{
                 if(Number(input)){
-                    return true
+                    return true;
                 }
-                return false
+                return false;
             }
         },
         {
@@ -148,26 +149,26 @@ function addTrainer(){
         },
     ])
     .then((data)=>{
-        let newTrainerName = data.newTrainerName.charAt(0).toUpperCase()+data.newTrainerName.slice(1)
-        let newTrainerAge = data.newTrainerAge
-        let newTrainerRegion = data.newTrainerRegion
-        let flag = false
+        let newTrainerName = data.newTrainerName.charAt(0).toUpperCase()+data.newTrainerName.slice(1);
+        let newTrainerAge = data.newTrainerAge;
+        let newTrainerRegion = data.newTrainerRegion;
+        let flag = false;
         db.query(`SELECT name, id FROM region`,(err,results)=>{
             if(err){
-                console.error(err)
+                console.error(err);
             }else{
-                let regionArr = []
+                let regionArr = [];
                 let newTrainerRegionLowerCase = newTrainerRegion.toLowerCase();
                 for(let x=0;x<results.length;x=x+1){
-                    regionArr.push(results[x].name.toLowerCase())
+                    regionArr.push(results[x].name.toLowerCase());
                 }
                 if(!regionArr.includes(newTrainerRegionLowerCase)){
                     return console.log('Region does not exist, please add the new region first');
                 }else{
-                    newTrainerRegion = newTrainerRegionLowerCase.charAt(0).toUpperCase()+newTrainerRegionLowerCase.slice(1)
+                    newTrainerRegion = newTrainerRegionLowerCase.charAt(0).toUpperCase()+newTrainerRegionLowerCase.slice(1);
                     for(let x=0;x<results.length;x=x+1){
                         if(newTrainerRegion === results[x].name){
-                            newTrainerRegion = results[x].id
+                            newTrainerRegion = results[x].id;
                         }
                     }
                     flag = true;
@@ -175,20 +176,20 @@ function addTrainer(){
                 if(flag){
                     db.query(`INSERT INTO trainer(name, age, region_id) VALUES (?, ?, ?)`, [newTrainerName, newTrainerAge, newTrainerRegion],(err,results)=>{
                         if(err){
-                            console.error(err)
+                            console.error(err);
                         }else{
                             db.query(`SELECT * FROM trainer`,(err,results)=>{
-                                (err)?console.error(err):console.table(results)
+                                (err)?console.error(err):console.table(results);
                             })
-                            console.log('New trainer successfully added')
-                        }
-                    })
-                }
-            }
+                            console.log('New trainer successfully added');
+                        };
+                    });
+                };
+            };
 
-        })
-    })
-}
+        });
+    });
+};
 
 function addPokemon(){
     inquirer
@@ -215,74 +216,73 @@ function addPokemon(){
         }
     ])
     .then((data)=>{
-        let newPokemonName = data.newPokemonName.charAt(0).toUpperCase()+data.newPokemonName.slice(1)
-        let newPokemonCategory = data.newPokemonCategory
-        let newPokemonTrainer = data.newPokemonTrainer.charAt(0).toUpperCase()+data.newPokemonTrainer.slice(1)
-        let newPokemonStrongestInParty = data.newPokemonStrongestInParty.charAt(0).toUpperCase()+data.newPokemonStrongestInParty.slice(1)
-        let flag = false;
+        let newPokemonName = data.newPokemonName.charAt(0).toUpperCase()+data.newPokemonName.slice(1);
+        let newPokemonCategory = data.newPokemonCategory;
+        let newPokemonTrainer = data.newPokemonTrainer.charAt(0).toUpperCase()+data.newPokemonTrainer.slice(1);
+        let newPokemonStrongestInParty = data.newPokemonStrongestInParty.charAt(0).toUpperCase()+data.newPokemonStrongestInParty.slice(1);
         db.query(`SELECT name, id FROM trainer`,(err,results)=>{
             if(err){
-                console.error(err)
+                console.error(err);
             }else{
-                let trainerArr = []
+                let trainerArr = [];
                 for(let x=0;x<results.length;x=x+1){
-                    trainerArr.push(results[x].name.toLowerCase())
+                    trainerArr.push(results[x].name.toLowerCase());
                 }
-                let newPokemonTrainerLowerCase = newPokemonTrainer.toLowerCase()
+                let newPokemonTrainerLowerCase = newPokemonTrainer.toLowerCase();
                 if(!trainerArr.includes(newPokemonTrainerLowerCase)){
-                    return console.log('Trainer does not exist, please add them first')
+                    return console.log('Trainer does not exist, please add them first');
                 }else{
                     for(let x=0;x<results.length;x=x+1){
                         if(newPokemonTrainer === results[x].name){
-                            newPokemonTrainer = results[x].id
+                            newPokemonTrainer = results[x].id;
                         }
-                    }
+                    };
                     db.query(`SELECT name, id FROM pokemon`,(err,results)=>{
                         if(err){
-                            console.err(err)
+                            console.err(err);
                         }else{
-                            let pokemonArr = []
+                            let pokemonArr = [];
                             for(let x=0;x<results.length;x=x+1){
-                                pokemonArr.push(results[x].name.toLowerCase())
+                                pokemonArr.push(results[x].name.toLowerCase());
                             }
-                            let newPokemonStrongestInPartyLowerCase = newPokemonStrongestInParty.toLowerCase()
+                            let newPokemonStrongestInPartyLowerCase = newPokemonStrongestInParty.toLowerCase();
                             if(newPokemonStrongestInPartyLowerCase !== 'null' && !pokemonArr.includes(newPokemonStrongestInPartyLowerCase)){
-                                return console.log('This strongest pokemon doesn\'t exist, please add them to the list')
+                                return console.log('This strongest pokemon doesn\'t exist, please add them to the list');
                             }else{
                                 for(let x=0;x<results.length;x=x+1){
                                     if(newPokemonStrongestInParty === results[x].name){
-                                        newPokemonStrongestInParty = results[x].id
-                                    }
-                                }
+                                        newPokemonStrongestInParty = results[x].id;
+                                    };
+                                };
                                 if(newPokemonStrongestInPartyLowerCase === 'null'){
                                     newPokemonStrongestInParty = null;
-                                }
+                                };
                                 db.query(`INSERT INTO pokemon(name, category, trainer_id, strongest_in_party) VALUES (?,?,?,?)`, [newPokemonName,newPokemonCategory,newPokemonTrainer,newPokemonStrongestInParty],(err,results)=>{
                                     if(err){
-                                        console.error(err)
+                                        console.error(err);
                                     }else{
                                         db.query(`SELECT * FROM pokemon`,(err,results)=>{
-                                            (err)?console.error(err):console.table(results)
-                                        })
-                                    }
-                                })
-                            }
-                        }
-                    })
-                }
-            }
-        })
-    })
-}
+                                            (err)?console.error(err):console.table(results);
+                                        });
+                                    };
+                                });
+                            };
+                        };
+                    });
+                };
+            };
+        });
+    });
+};
 
 function updatePokemonTrainer(){
     db.query(`SELECT name FROM trainer`,(err,results)=>{
-        let trainerArr = []
+        let trainerArr = [];
         if(err){
-            console.error(err)
+            console.error(err);
         }else{
             for(let x=0;x<results.length;x=x+1){
-                trainerArr.push(results[x].name)
+                trainerArr.push(results[x].name);
             }
             inquirer
                 .prompt([
@@ -290,18 +290,19 @@ function updatePokemonTrainer(){
                         type: 'list',
                         name: 'pokemonTrainer',
                         message: 'Which trainer owns this pokemon?',
-                        choices: trainerArr
+                        choices: trainerArr,
+                        loop: false
                     }
                 ])
                 .then((data)=>{
                     db.query(`SELECT pokemon.name, pokemon.id FROM pokemon INNER JOIN trainer ON trainer.id = pokemon.trainer_id WHERE trainer.name = ?`, data.pokemonTrainer, (err,results)=>{
                         if(err){
-                            console.error(err)
+                            console.error(err);
                         }else{
-                            console.table(results)
-                            let selectedPokemonArr = []
+                            console.table(results);
+                            let selectedPokemonArr = [];
                             for(let x=0;x<results.length;x=x+1){
-                                selectedPokemonArr.push(results[x].id)
+                                selectedPokemonArr.push(results[x].id);
                             }
                             inquirer
                             .prompt([
@@ -309,59 +310,60 @@ function updatePokemonTrainer(){
                                     type: 'list',
                                     name: 'selectedPokemonId',
                                     message: 'Which pokemon would you like to update? (refer to the table above to select the correct ID)',
-                                    choices: selectedPokemonArr
+                                    choices: selectedPokemonArr,
+                                    loop: false
                                 }
                             ])
                             .then((data)=>{
-                                let selectedPokemonId = data.selectedPokemonId
+                                let selectedPokemonId = data.selectedPokemonId;
                                 inquirer
                                 .prompt([
                                     {
                                         type: 'list',
                                         name: 'updatedPokemonTrainer',
                                         message: 'Who is the new trainer for this pokmeon?',
-                                        choices: trainerArr
+                                        choices: trainerArr,
+                                        loop: false
                                     }
                                 ])
                                 .then((data)=>{
-                                    let selectedNewTrainer = data.updatedPokemonTrainer
-
+                                    let selectedNewTrainer = data.updatedPokemonTrainer;
                                     db.query(`SELECT pokemon.name as pokemon_name,trainer.name as trainer_name FROM pokemon INNER JOIN trainer ON pokemon.trainer_id = trainer.id WHERE pokemon.id = ?`,selectedPokemonId,(err,results)=>{
                                         if(err){
-                                            console.error(err)
+                                            console.error(err);
                                         }else{
-                                            console.log('OLD POKEMON DATA')
-                                            console.table(results)
-                                        }
-                                    })
+                                            console.log('OLD POKEMON DATA');
+                                            console.table(results);
+                                        };
+                                    });
                                     db.query(`SELECT id FROM trainer WHERE name = ?`,selectedNewTrainer,(err,results)=>{
                                         if(err){
-                                            console.error(err)
+                                            console.error(err);
                                         }else{
                                             db.query(`UPDATE pokemon set trainer_id = ? WHERE id = ?`, [results[0].id, selectedPokemonId],(err,results)=>{
                                                 if(err){
-                                                    console.error(err)
+                                                    console.error(err);
                                                 }else{
                                                     db.query(`SELECT pokemon.name as pokemon_name,trainer.name as trainer_name FROM pokemon INNER JOIN trainer ON pokemon.trainer_id = trainer.id WHERE pokemon.id = ?`,selectedPokemonId,(err,results)=>{
                                                         if(err){
-                                                            console.error(err)
+                                                            console.error(err);
                                                         }else{
-                                                            console.log('NEW POKEMON DATA')
-                                                            console.table(results)
-                                                        }
-                                                    })
-                                                }
-                                            })
-                                        }
-                                    })
-                                })
-                            })
-                        }
-                    })
-                })
-        }
-    })
-}
+                                                            console.log('NEW POKEMON DATA');
+                                                            console.table(results);
+                                                        };
+                                                    });
+                                                };
+                                            });
+                                        };
+                                    });
+                                });
+                            });
+                        };
+                    });
+                });
+        };
+    });
+};
 
 function startInq(){
     inquirer
@@ -381,7 +383,8 @@ function startInq(){
                 'Add a Trainer',
                 'Add a Pokemon',
                 'Update a Pokemon\'s Trainer',
-            ]
+            ],
+            loop: false
         },
     ])
     .then((data)=>{
@@ -416,24 +419,8 @@ function startInq(){
             case 'Update a Pokemon\'s Trainer':
                 updatePokemonTrainer();
                 break;
-        }
-    })
+        };
+    });
 };
 
 startInq();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
