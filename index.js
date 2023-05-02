@@ -86,13 +86,40 @@ function viewRegionEliteFourPokemon(){ // function for viewing all of a region's
 };
 
 function viewEliteFourTotalAge(){ // does a query that will sum up the ages for all of the trainers and return that age in the end
-    db.query(`SELECT SUM(age) as total_years_of_experience FROM trainer`,(err,results)=>{
+    db.query(`SELECT name,id FROM region`,(err,results)=>{
         if(err){
-            console.error(err);
+            console.error(err)
         }else{
-            console.table(results[0]); // have to do results[0] because otherwise it would look weird in the table where there'd be a column of index as well instead of just total years of experience
-        };
-    });
+            let regionArr = []
+            for(let x=0;x<results.length;x=x+1){
+                regionArr.push(results[x].name)
+            }
+            inquirer
+            .prompt([
+                {
+                    type: 'list',
+                    name: 'region',
+                    message: 'Which region would you like to choose?',
+                    choices: regionArr,
+                    loop: false
+                }
+            ])
+            .then((data)=>{
+                for(let x=0;x<results.length;x=x+1){
+                    if(data.region === results[x].name){
+                        data.region = results[x].id
+                    }
+                }
+                db.query(`SELECT SUM(trainer.age) as total_years_of_experience FROM trainer INNER JOIN region ON trainer.region_id = region.id WHERE region.id = ? `,data.region,(err,results)=>{
+                    if(err){
+                        console.error(err)
+                    }else{
+                        console.table(results[0])
+                    }
+                })
+            })
+        }
+    })
 };
 
 function addRegion(){ // adds a new region based on user input
